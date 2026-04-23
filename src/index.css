@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #d4af37;
+  --color-primary-dark: #b5952f;
+  --color-secondary: #2c2c2c;
+  --color-dark: #1a1a1a;
+  --color-gray: #f8f9fa;
+  --color-paper: #ffffff;
+  
+  --font-sans: "Cairo", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Playfair Display", "Cairo", ui-serif, serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-gray);
+    color: var(--color-dark);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    direction: rtl;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
