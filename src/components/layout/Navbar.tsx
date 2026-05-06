@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, Menu, X, Search, ChevronDown } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search, ChevronDown, LayoutDashboard } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useData } from '../../context/DataContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../../lib/utils';
 
 export function Navbar() {
   const { cartCount, setIsCartOpen } = useCart();
+  const { storeName } = useData();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
@@ -21,6 +23,11 @@ export function Navbar() {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
+  // Prevent Navbar from showing up on admin layout
+  if (location.pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <>
       <header
@@ -32,7 +39,7 @@ export function Navbar() {
         <div className="mx-auto flex max-w-[1400px] items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <div className="text-primary font-heading font-black text-rose-800 text-3xl leading-none">
-              أوتار<br/>
+              {storeName.split(' ')[0]}<br/>
               <span className="text-dark text-sm tracking-widest uppercase font-sans font-bold">AWTAR</span>
             </div>
           </Link>
@@ -41,9 +48,9 @@ export function Navbar() {
             <Link to="/" className="text-primary border-b-2 border-primary pb-0.5">
               الرئيسية
             </Link>
-            <div className="relative group cursor-pointer flex items-center gap-1">
-              الآلات <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
-            </div>
+            <Link to="/shop" className="hover:text-primary transition-colors">
+              تسوق الآن
+            </Link>
             <div className="relative group cursor-pointer flex items-center gap-1">
               العلامات التجارية <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-primary transition-colors" />
             </div>
@@ -67,8 +74,8 @@ export function Navbar() {
                 </span>
               )}
             </button>
-            <Link to="/login" className="hidden md:inline-flex bg-dark text-white font-medium text-sm px-6 py-2.5 rounded-full shadow-sm hover:bg-primary transition-colors">
-              تسجيل الدخول
+            <Link to="/admin" className="hidden md:inline-flex bg-dark text-white font-medium text-sm p-2.5 rounded-full shadow-sm hover:bg-primary transition-colors" title="إدارة المتجر">
+              <LayoutDashboard className="w-5 h-5" />
             </Link>
             <button 
               className="md:hidden p-2 -mr-2 text-dark"
@@ -92,7 +99,7 @@ export function Navbar() {
           >
             <div className="flex justify-between items-center mb-12">
               <div className="text-primary font-heading font-black text-2xl tracking-tighter">
-                أوتار للموسيقى
+                {storeName}
               </div>
               <button onClick={() => setIsMobileMenuOpen(false)} className="bg-gray-100 p-2 rounded-full">
                 <X className="w-5 h-5" />
@@ -101,10 +108,12 @@ export function Navbar() {
             
             <nav className="flex flex-col space-y-6 flex-1 text-lg font-bold">
               <Link to="/" onClick={() => setIsMobileMenuOpen(false)}>الرئيسية</Link>
-              <Link to="/instruments" onClick={() => setIsMobileMenuOpen(false)}>الآلات</Link>
+              <Link to="/shop" onClick={() => setIsMobileMenuOpen(false)}>تسوق الآن</Link>
               <Link to="/brands" onClick={() => setIsMobileMenuOpen(false)}>العلامات التجارية</Link>
               <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)}>اتصل بنا</Link>
-              <Link to="/login" className="text-primary" onClick={() => setIsMobileMenuOpen(false)}>تسجيل الدخول</Link>
+              <Link to="/admin" className="text-primary flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
+                <LayoutDashboard className="w-5 h-5" /> لوحة التحكم
+              </Link>
             </nav>
           </motion.div>
         )}

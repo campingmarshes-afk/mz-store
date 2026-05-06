@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { products } from '../data/products';
+import { useData } from '../context/DataContext';
 import { useCart } from '../context/CartContext';
 import { Plus, Minus, ArrowLeft } from 'lucide-react';
 
 export function ProductDetails() {
   const { id } = useParams();
+  const { products, getAvailableStock } = useData();
   const product = products.find(p => p.id === id);
+
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
 
@@ -18,6 +20,9 @@ export function ProductDetails() {
       </div>
     );
   }
+
+  const availableStock = getAvailableStock(product.id);
+  const isOutOfStock = availableStock <= 0;
 
   return (
     <div className="min-h-screen pt-24 pb-24">
@@ -36,14 +41,19 @@ export function ProductDetails() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: idx * 0.2 }}
-              className="aspect-[4/5] overflow-hidden bg-gray-100 rounded-sm"
+              className="aspect-[4/5] overflow-hidden bg-gray-100 rounded-sm relative"
             >
               <img 
                 src={img} 
                 alt={`${product.name} detail ${idx + 1}`} 
-                className="w-full h-full object-cover"
+                className={`w-full h-full object-cover ${isOutOfStock ? 'opacity-70' : ''}`}
                 referrerPolicy="no-referrer"
               />
+              {isOutOfStock && idx === 0 && (
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                  <span className="bg-white px-6 py-3 rounded-full text-black font-bold text-sm tracking-widest uppercase">Out of Stock</span>
+                </div>
+              )}
             </motion.div>
           ))}
         </div>
@@ -56,7 +66,12 @@ export function ProductDetails() {
                 {product.category}
               </span>
               <h1 className="font-serif text-5xl md:text-6xl mb-4 leading-tight">{product.name}</h1>
-              <span className="text-xl tracking-wide">${product.price} USD</span>
+              <div className="flex justify-between items-center">
+                 <span className="text-xl tracking-wide">${product.price.toFixed(2)} USD</span>
+                 <span className={`text-sm font-bold ${isOutOfStock ? 'text-red-500' : 'text-green-600'}`}>
+                   {isOutOfStock ? 'Out of Stock' : `Available: ${availableStock}`}
+                 </span>
+              </div>
             </div>
 
             <p className="text-ink/70 leading-relaxed mb-10 text-sm md:text-base">
@@ -76,27 +91,34 @@ export function ProductDetails() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex items-center justify-between border border-ink/20 rounded-full px-4 h-14 sm:w-1/3">
+              <div className={`flex items-center justify-between border border-ink/20 rounded-full px-4 h-14 sm:w-1/3 ${isOutOfStock ? 'opacity-50 pointer-events-none' : ''}`}>
                 <button 
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="p-2 text-ink/60 hover:text-ink transition-colors"
+                  className="p-2 text-ink/60 hover:text-ink transition-colors disabled:opacity-50"
+                  disabled={quantity <= 1 || isOutOfStock}
                 >
                   <Minus className="w-4 h-4" />
                 </button>
-                <span className="font-medium text-sm">{quantity}</span>
+                <span className="font-medium text-sm">{isOutOfStock ? 0 : quantity}</span>
                 <button 
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="p-2 text-ink/60 hover:text-ink transition-colors"
+                  onClick={() => setQuantity(Math.min(availableStock, quantity + 1))}
+                  className="p-2 text-ink/60 hover:text-ink transition-colors disabled:opacity-50"
+                  disabled={quantity >= availableStock || isOutOfStock}
                 >
                   <Plus className="w-4 h-4" />
-             </button>
+                </button>
               </div>
               
               <button 
-                onClick={() => addItem(product, quantity)}
-                className="flex-1 bg-ink text-paper h-14 rounded-full text-xs uppercase tracking-[0.2em] font-medium hover:bg-ink/90 transition-all flex items-center justify-center"
+                onClick={() => {
+                  if (!isOutOfStock) {
+                    addItem(product, quantity);
+                  }
+                }}
+                disabled={isOutOfStock}
+                className="flex-1 bg-ink text-paper h-14 rounded-full text-xs uppercase tracking-[0.2em] font-medium hover:bg-ink/90 transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Add to Bag — ${(product.price * quantity).toFixed(2)}
+                {isOutOfStock ? 'Out of Stock' : `Add to Bag — ${(product.price * quantity).toFixed(2)}`}
               </button>
             </div>
 

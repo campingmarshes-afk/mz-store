@@ -6,6 +6,7 @@ export interface Product {
   category: string;
   images: string[];
   features: string[];
+  stock: number;
 }
 
 export const products: Product[] = [
@@ -18,7 +19,8 @@ export const products: Product[] = [
     images: [
       "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?q=80&w=1000&auto=format&fit=crop"
     ],
-    features: ["مفاتيح خشبية", "صوت محيطي", "دواسات نحاسية"]
+    features: ["مفاتيح خشبية", "صوت محيطي", "دواسات نحاسية"],
+    stock: 5
   },
   {
     id: "obj-002",
@@ -29,7 +31,8 @@ export const products: Product[] = [
     images: [
       "https://images.unsplash.com/photo-1550985543-f47f38aee660?q=80&w=1000&auto=format&fit=crop"
     ],
-    features: ["خشب الماهوجني", "أوتار نايلون", "صناعة يدوية"]
+    features: ["خشب الماهوجني", "أوتار نايلون", "صناعة يدوية"],
+    stock: 12
   },
   {
     id: "obj-003",
@@ -40,7 +43,8 @@ export const products: Product[] = [
     images: [
       "https://images.unsplash.com/photo-1623864070005-728b7eaddce1?q=80&w=1000&auto=format&fit=crop"
     ],
-    features: ["ظهر مقوس جوز", "أوتار عالية الجودة", "مفاتيح الأبنوس"]
+    features: ["ظهر مقوس جوز", "أوتار عالية الجودة", "مفاتيح الأبنوس"],
+    stock: 4
   },
   {
     id: "obj-004",
@@ -51,7 +55,8 @@ export const products: Product[] = [
     images: [
       "https://images.unsplash.com/photo-1612225330812-01a9c6b355ec?q=80&w=1000&auto=format&fit=crop"
     ],
-    features: ["خشب القيقب الجبلي", "قوس شعر حصان منغولي", "يتضمن حقيبة"]
+    features: ["خشب القيقب الجبلي", "قوس شعر حصان منغولي", "يتضمن حقيبة"],
+    stock: 7
   },
   {
     id: "obj-005",
@@ -62,7 +67,8 @@ export const products: Product[] = [
     images: [
       "https://images.unsplash.com/photo-1554104707-a76b270e4bbc?q=80&w=1000&auto=format&fit=crop"
     ],
-    features: ["بيك أب مزدوج", "عنق روزوود", "تحكم بالتون والفاليوم"]
+    features: ["بيك أب مزدوج", "عنق روزوود", "تحكم بالتون والفاليوم"],
+    stock: 3
   }
 ];
 

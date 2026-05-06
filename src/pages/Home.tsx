@@ -2,11 +2,13 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, ChevronLeft, Plus, Star, Box, Compass } from 'lucide-react';
-import { products } from '../data/products';
+import { useData } from '../context/DataContext';
 import { useCart } from '../context/CartContext';
 
 export function Home() {
   const { addItem } = useCart();
+  const { products } = useData();
+
   const brands = [
     { name: "Yamaha", logo: "yamaha" },
     { name: "Fender", logo: "fender" },
@@ -138,37 +140,46 @@ export function Home() {
               <ChevronRight className="w-5 h-5" />
             </button>
             
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 overflow-x-auto pb-4 px-2 no-scrollbar">
+            <div className="flex gap-4 overflow-x-auto pb-6 px-2 no-scrollbar snap-x snap-mandatory">
               {products.map(product => (
-                <div key={product.id} className="bg-white rounded-[1.5rem] p-4 flex flex-col hover:shadow-xl transition-shadow border border-gray-100 min-w-[200px]">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0">
-                      <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                    </div>
-                    <div className="flex items-center gap-1.5 pt-2">
-                      <span className="bg-red-100 text-red-600 outline outline-1 outline-red-200 text-[10px] font-bold px-1.5 py-0.5 rounded-sm">جديد</span>
-                      <div className="flex items-center text-primary text-xs font-bold gap-0.5" dir="ltr">
-                        4.8 <Star className="w-3 h-3 fill-current" />
+                <div key={product.id} className="bg-white rounded-[1.5rem] overflow-hidden flex flex-col shadow-sm hover:shadow-xl transition-all border border-gray-100 min-w-[260px] md:min-w-[280px] snap-start group">
+                  {/* Image Section */}
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50">
+                    <img 
+                      src={product.images[0]} 
+                      alt={product.name} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      referrerPolicy="no-referrer" 
+                    />
+                    <div className="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
+                      <div className="flex items-center bg-white/90 backdrop-blur-sm text-dark text-xs font-bold px-2 py-1 rounded-full gap-1 shadow-sm" dir="ltr">
+                        <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" /> 4.8
                       </div>
+                      <span className="bg-red-500 text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-sm">جديد</span>
                     </div>
                   </div>
                   
-                  <div className="flex-1 mt-2">
-                    <h4 className="font-heading font-bold text-sm text-dark mb-1 line-clamp-1">{product.name}</h4>
-                    <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed h-8">
-                      {product.description}
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-center justify-between mt-4">
-                    <button 
-                      onClick={() => addItem(product)}
-                      className="bg-dark hover:bg-primary text-white flex items-center justify-center gap-1 px-4 py-1.5 rounded-full text-xs font-bold transition-colors shadow-sm"
-                    >
-                      إضافة <Plus className="w-3 h-3 stroke-[3]" />
-                    </button>
-                    <div className="text-left flex flex-col" dir="ltr">
-                      <span className="font-heading font-bold text-dark text-sm">${product.price.toFixed(2)}</span>
+                  {/* Content Section */}
+                  <div className="p-5 flex flex-col flex-1">
+                    <div className="flex-1">
+                      <h4 className="font-heading font-bold text-base text-dark mb-1.5 line-clamp-1">{product.name}</h4>
+                      <p className="text-[13px] text-gray-500 line-clamp-2 leading-relaxed mb-4">
+                        {product.description}
+                      </p>
+                    </div>
+                    
+                    {/* Footer / Actions */}
+                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100/60">
+                      <div className="text-left flex flex-col" dir="ltr">
+                        <span className="font-heading font-bold text-primary text-xl tracking-tight">${product.price.toFixed(2)}</span>
+                      </div>
+                      <button 
+                        onClick={() => addItem(product)}
+                        className="bg-gray-50 hover:bg-dark text-dark hover:text-white flex items-center justify-center p-2.5 rounded-full transition-all group/btn shadow-sm"
+                        title="إضافة للسلة"
+                      >
+                        <Plus className="w-5 h-5 group-hover/btn:rotate-90 transition-transform" />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -213,29 +224,24 @@ export function Home() {
 
 function PromoCard({ title, bgClass, imgSrc, textColor = "text-white" }: { title: string, bgClass: string, imgSrc: string, textColor?: string }) {
   return (
-    <div className={`rounded-3xl p-6 relative overflow-hidden h-[240px] group cursor-pointer ${bgClass}`}>
-      <h3 className={`font-heading font-bold text-2xl leading-tight max-w-[75%] relative z-10 ${textColor}`}>
-        {title}
-      </h3>
-      
-      <div className="absolute -bottom-4 left-[-10%] w-[120%] h-[120%] object-contain origin-bottom-left group-hover:scale-105 transition-transform duration-500 transform -scale-x-100">
+    <div className={`rounded-3xl p-6 relative overflow-hidden h-[240px] flex flex-col justify-between group cursor-pointer ${bgClass}`} dir="rtl">
+      {/* Background Image Container */}
+      <div className="absolute inset-0 z-0">
         <img 
           src={imgSrc} 
           alt={title} 
-          className="w-full h-full object-cover rounded-full mix-blend-luminosity opacity-40 group-hover:opacity-60 transition-opacity"
-          referrerPolicy="no-referrer"
-        />
-        {/* Colorful image overlay */}
-        <img 
-          src={imgSrc} 
-          alt={title} 
-          className="absolute inset-0 w-full h-full object-contain scale-75 translate-x-12 translate-y-8 drop-shadow-2xl"
+          className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 opacity-90 mix-blend-luminosity group-hover:mix-blend-normal"
+          style={{ maskImage: 'linear-gradient(to right, black 20%, transparent 90%)', WebkitMaskImage: 'linear-gradient(to right, black 20%, transparent 90%)' }}
           referrerPolicy="no-referrer"
         />
       </div>
+
+      <h3 className={`font-heading font-bold text-2xl leading-tight max-w-[65%] relative z-10 ${textColor}`}>
+        {title}
+      </h3>
       
-      <div className={`absolute bottom-6 right-6 text-xs font-bold flex items-center gap-1 ${textColor} opacity-90 group-hover:opacity-100`}>
-        تسوق الآن <ChevronLeft className="w-4 h-4 ml-1" />
+      <div className={`text-xs font-bold flex items-center gap-1 ${textColor} opacity-90 group-hover:opacity-100 relative z-10 w-fit`}>
+        تسوق الآن <ChevronLeft className="w-4 h-4 mr-1" />
       </div>
     </div>
   );

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { useData } from '../context/DataContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Lock, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 export function Checkout() {
   const { items, cartTotal, clearCart } = useCart();
+  const { addOrder } = useData();
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -20,7 +22,18 @@ export function Checkout() {
       setStep(s => (s + 1) as 1 | 2 | 3);
     } else {
       setIsProcessing(true);
+      
+      const newOrder = {
+        customerName: 'Online Customer', // Would get from form in a real app
+        total: orderTotal,
+        status: 'booked' as const,
+        date: new Date().toISOString().split('T')[0],
+        items: items.map(item => ({ productId: item.id, quantity: item.quantity })),
+        salesRepId: null
+      };
+      
       setTimeout(() => {
+        addOrder(newOrder);
         setIsProcessing(false);
         clearCart();
         navigate('/success');
